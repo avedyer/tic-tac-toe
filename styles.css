@@ -1,0 +1,45 @@
+body {
+    text-align: center;
+    position: relative;
+}
+
+.players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 60vw;
+    margin: auto;
+}
+
+.playerType {
+    padding: 15px;
+}
+
+.gameboard {
+    width: 600px;
+    height: 600px;
+    background-color: cyan;
+    margin: auto;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    overflow: hidden;
+}
+
+.tile {
+    opacity: 0.5;
+    outline: 2px solid black;
+}
+
+.tile:hover {
+    background-color: white;
+}
+
+.winner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    display: none;
+}

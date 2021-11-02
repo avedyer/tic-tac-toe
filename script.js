@@ -15,63 +15,101 @@ const Player = (marker) => {
 const ComputerPlayer = (marker) => {
 
     const computeMove = () => {
-        const tiles = gameboard.getTiles();
-        let simulTiles = tiles;
-        let simulTilesMarked;
+
+        let simulTiles = [...gameboard.getTiles()];
+        let simulTilesMarked = gameboard.getTilesMarked();
         let simulActiveMarker = 'o';
 
         let winCounts = []
 
         for (let i=0; i<9; ++i) {
 
-            simulTilesMarked = gameboard.getTilesMarked();
-
-            if (!tiles[i]) {
+            if (!gameboard.getTiles()[i]) {
 
                 winCounts[i] = 0;
                 simulTiles[i] = simulActiveMarker;
-                ++simulTilesMarked;
+                simulTilesMarked++;
 
-                for (let j=0; j<10; ++j) {
+                for (let j=0; j<256; ++j) {
 
                     while (simulTilesMarked < 9) {
 
-                        simulActiveMarker = 'o' ? simulActiveMarker = 'x' : simulActiveMarker = 'o';
+                        simulActiveMarker === 'o' ? simulActiveMarker = 'x' : simulActiveMarker = 'o';
         
-                        makeRandomPlay(simulTiles, simulActiveMarker);
-                        ++simulTilesMarked;
-        
+                        simulTiles = makeRandomPlay(simulTiles, simulActiveMarker);
+                        simulTilesMarked++;
+
                         if (Gameplay.checkWin(simulTiles, simulActiveMarker)) {
-                            simulActiveMarker = 'o' ? ++winCounts[i] : --winCounts[i];
+
+                            console.log(`${simulActiveMarker} win detected!`);
+
+                            simulTilesMarked = gameboard.getTilesMarked();
+                            simulTiles = [...gameboard.getTiles()];
+
+                            simulActiveMarker === 'o' ? ++winCounts[i] : --winCounts[i];
+                            simulActiveMarker = 'o';
+
+                            console.log(winCounts);
+
                             break
                         }
-                    }
+                    }   
+
+                    simulTilesMarked = gameboard.getTilesMarked();
+                    simulTiles = [...gameboard.getTiles()];
                 }   
             }
 
-            simulTiles = tiles;
+            simulTiles = [...gameboard.getTiles()];
+
+            console.log(winCounts);
         }
 
-        console.log(winCounts);
+        let winningIndex;
+        let highest;
+
+        for (let i=0; i<winCounts.length; ++i) {
+            if (winCounts[i]) {
+                winningIndex = i;
+                highest = winCounts[i];
+                break
+            }
+        }
+
+        console.log(winningIndex);
+        console.log(highest);
+
+        for (let i=winningIndex; i<winCounts.length; ++i) {
+            if (winCounts[i] && winCounts[i] > highest) {
+                winningIndex = i;
+                highest = winCounts[i];
+            }
+        }
+
+        console.log(winningIndex);
+
+        placeMove(winningIndex);
     }
 
-    const makeRandomPlay = (tiles, marker) => {
+    const makeRandomPlay = (currTiles, marker) => {
+
         let tileChoice = Math.floor(Math.random() * 9);
 
-        while(tiles[tileChoice]) {
+        while(currTiles[tileChoice]) {
             tileChoice = Math.floor(Math.random() * 9);
         }
 
-        tiles[tileChoice] = marker;
+        currTiles[tileChoice] = marker;
 
-        return tiles;
+        return currTiles
     }
 
     const {placeMove} = Player(marker);
 
     return {
         computeMove,
-        placeMove
+        placeMove,
+        makeRandomPlay
     }
 };
 
@@ -94,13 +132,13 @@ const gameboard = (() => {
 
     let tiles = new Array(9);
     let tilesMarked = 0;
-    
-    const getTiles = () => {
-        return tiles;
-    }
 
     const getTilesMarked = () => {
-        return tilesMarked;
+        return tilesMarked
+    }
+
+    const getTiles = () => {
+        return tiles
     }
     
     const reset = () => {
@@ -132,7 +170,7 @@ const gameboard = (() => {
 
         tilesMarked = 0;
 
-        if (Gameplay.getActivePlayer() === 'o'){
+        if (Gameplay.getActivePlayer().marker === 'o'){
             Gameplay.switchPlayer();
         }
 
@@ -149,7 +187,8 @@ const gameboard = (() => {
         }
 
         tiles[tile] = marker;
-        ++tilesMarked;
+        tilesMarked++;
+
         updateDisplay(tile, marker);
 
         if(Gameplay.checkWin(tiles, marker)) {
@@ -196,12 +235,12 @@ const gameboard = (() => {
     restartElement.addEventListener('click', function() {reset()});
 
     return {
+        getTiles,
+        getTilesMarked,
         reset,
         updateTile,
         updateDisplay,
         updateWinner,
-        getTiles,
-        getTilesMarked,
     }
 })();
 
@@ -280,7 +319,7 @@ const Gameplay =(() => {
     return {    
         switchPlayer,
         checkWin,
-        getActivePlayer,
+        getActivePlayer
     }
 })();
 

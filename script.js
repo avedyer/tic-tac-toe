@@ -102,7 +102,6 @@ const gameboard = (() => {
     const gameboardElement = document.querySelector('.gameboard');
     const winnerElement = document.querySelector('.winner');
     const restartElement = document.querySelector('.restart');
-    const selectorPromptElement = document.querySelector('.selectorPrompt');
 
     let tiles = new Array(9);
     let tilesMarked = 0;
@@ -138,6 +137,12 @@ const gameboard = (() => {
 
         winnerElement.style.display = 'none';
 
+        for (const selector of playerSelectors) {
+            selector.style.opacity = '1';
+            selector.classList.remove('underline');
+            selector.classList.add('hoverEffect');
+        }
+
         if (tileElements.length === 9) {
             for (let element of tileElements) {
                 element.innerHTML = '';
@@ -162,13 +167,9 @@ const gameboard = (() => {
         }
 
         players[1] = null;
-
-        selectorPromptElement.style.display = 'block';
     }
 
     const activateBoard = () => {
-
-        selectorPromptElement.style.display = 'none';
 
         tilesMarked = 0;
 
@@ -177,6 +178,10 @@ const gameboard = (() => {
         }
 
         gameboardElement.style.opacity = '1';
+
+        for (const selector of playerSelectors) {
+            selector.classList.remove('hoverEffect');
+        }
     }
 
     const updateTile = (tile, marker) => {
@@ -337,10 +342,21 @@ const playerSelectors = document.querySelectorAll('.playerType');
 for (const selector of playerSelectors) {
     selector.onclick = () => {
         if (!players[1]) {
-            selector.innerHTML === 'Human' ? players[1] = player2 : players[1] = computerPlayer;
+
+            if (selector.innerHTML === 'Human') {
+                players[1] = player2;
+                playerSelectors[1].style.opacity = '0.3';
+                playerSelectors[0].classList.add('underline');
+            }
+            else {
+                players[1] = computerPlayer;
+                playerSelectors[0].style.opacity = '1';
+                playerSelectors[1].classList.add('underline');
+            }
+
             gameboard.activateBoard();
         }
     }
 }
 
-gameboard.reset();
+window.addEventListener('DOMContentLoaded', () => {gameboard.reset();});

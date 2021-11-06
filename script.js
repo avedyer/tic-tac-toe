@@ -102,6 +102,7 @@ const gameboard = (() => {
     const gameboardElement = document.querySelector('.gameboard');
     const winnerElement = document.querySelector('.winner');
     const restartElement = document.querySelector('.restart');
+    const selectorPromptElement = document.querySelector('.selectorPrompt');
 
     let tiles = new Array(9);
     let tilesMarked = 0;
@@ -135,6 +136,8 @@ const gameboard = (() => {
 
         let tileElements = document.querySelectorAll('.tile');
 
+        winnerElement.style.display = 'none';
+
         if (tileElements.length === 9) {
             for (let element of tileElements) {
                 element.innerHTML = '';
@@ -158,21 +161,27 @@ const gameboard = (() => {
             }    
         }
 
+        players[1] = null;
+
+        selectorPromptElement.style.display = 'block';
+    }
+
+    const activateBoard = () => {
+
+        selectorPromptElement.style.display = 'none';
+
         tilesMarked = 0;
 
         if (Gameplay.getActivePlayer().marker === 'o'){
             Gameplay.switchPlayer();
         }
 
-
-        winnerElement.style.display = 'none';
         gameboardElement.style.opacity = '1';
-
     }
 
     const updateTile = (tile, marker) => {
 
-        if (tiles[tile] || tilesMarked === 9) {
+        if (tiles[tile] || tilesMarked === 9 || !players[1]) {
             return false
         }
 
@@ -232,6 +241,7 @@ const gameboard = (() => {
         updateDisplay,
         updateWinner,
         getTilesGrid,
+        activateBoard,
     }
 })();
 
@@ -305,6 +315,9 @@ const Gameplay =(() => {
 
     const switchPlayer = () => {
         activePlayer === players[0] ? activePlayer = players[1] : activePlayer = players[0];
+        if (activePlayer === computerPlayer) {
+            setTimeout(() => {computerPlayer.computeMove();}, 2000);
+        }
     }
 
     const getActivePlayer = () => {
@@ -318,5 +331,16 @@ const Gameplay =(() => {
         getCounts,
     }
 })();
+
+const playerSelectors = document.querySelectorAll('.playerType');
+
+for (const selector of playerSelectors) {
+    selector.onclick = () => {
+        if (!players[1]) {
+            selector.innerHTML === 'Human' ? players[1] = player2 : players[1] = computerPlayer;
+            gameboard.activateBoard();
+        }
+    }
+}
 
 gameboard.reset();

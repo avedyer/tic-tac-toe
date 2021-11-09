@@ -34,6 +34,7 @@ body {
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(3, 1fr);
     overflow: hidden;
+    opacity: 0.5;
 }
 
 .tile {

@@ -32,6 +32,8 @@ const ComputerPlayer = (marker) => {
 
     const computeMove = () => {
 
+        console.log("computing...");
+
         let simulTiles = [...gameboard.getTiles()];
         let scores = [];
 
@@ -56,7 +58,7 @@ const ComputerPlayer = (marker) => {
                 computerAverage = getAverage(computerCounts);
                 playerAverage = getAverage(playerCounts);
 
-                scores[i] = playerAverage + computerAverage;
+                scores[i] = computerAverage + playerAverage;
 
                 console.log(simulTiles);
                 console.log(computerCounts, playerCounts);
@@ -73,9 +75,8 @@ const ComputerPlayer = (marker) => {
                 }
             }
         }
-        console.log(winningIndex);
 
-        placeMove(winningIndex);
+        setTimeout(() => {placeMove(winningIndex);}, 2000);
     }
 
     const {placeMove} = Player(marker);
@@ -132,6 +133,7 @@ const gameboard = (() => {
     }
     
     const reset = () => {
+        gameboardElement.style.opacity = '0.5';
 
         let tileElements = document.querySelectorAll('.tile');
 
@@ -160,8 +162,10 @@ const gameboard = (() => {
                 newTile.classList.add('tile');
                 newTile.setAttribute('id', i)
                 newTile.addEventListener('click', function() {
+                    if (Gameplay.getActivePlayer() !== computerPlayer) {
                         Gameplay.getActivePlayer().placeMove(parseInt(newTile.id));
-                    });
+                    }
+                });
                 gameboardElement.append(newTile);
             }    
         }
@@ -269,9 +273,11 @@ const Gameplay =(() => {
 
     const getCounts = (tilesInput, marker) => {
 
-        let tilesGrid = [...gameboard.getTilesGrid(tilesInput)];
+        let opponentMarker;
 
-        console.table(tilesGrid);
+        marker === 'x' ? opponentMarker = 'o' : opponentMarker = 'x';
+
+        let tilesGrid = [...gameboard.getTilesGrid(tilesInput)];
 
         let maxHorizontalCount = 0;
         let maxVerticalCount = 0;
@@ -296,6 +302,19 @@ const Gameplay =(() => {
                 if(i === (2-j) && tilesGrid[i][j] === marker) {
                     ++upslopeCount;
                 }
+
+                if (tilesGrid[i][j] === opponentMarker) {
+                    --horizontalCount;
+                }
+                if (tilesGrid[j][i] === opponentMarker) {
+                    --verticalCount;
+                }
+                if (i === j && tilesGrid[i][j] === opponentMarker) {
+                    --downslopeCount;
+                }
+                if(i === (2-j) && tilesGrid[i][j] === opponentMarker) {
+                    --upslopeCount;
+                }
             }
 
             if (verticalCount > maxVerticalCount) {
@@ -313,6 +332,9 @@ const Gameplay =(() => {
             if (count > 3) {
                 count = 3;
             }
+            if (count < 0) {
+                count = 0;
+            }
         }
 
         return counts
@@ -321,7 +343,7 @@ const Gameplay =(() => {
     const switchPlayer = () => {
         activePlayer === players[0] ? activePlayer = players[1] : activePlayer = players[0];
         if (activePlayer === computerPlayer) {
-            setTimeout(() => {computerPlayer.computeMove();}, 2000);
+            computerPlayer.computeMove();
         }
     }
 

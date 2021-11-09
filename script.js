@@ -18,21 +18,24 @@ const exponentiate = (array) => {
 
 const Player = (marker) => {
 
+    const isHuman = true;
+
     const placeMove = (tile) => {
         gameboard.updateTile(tile, marker);
     }
 
     return {
         placeMove,
-        marker
+        marker,
+        isHuman
     }
 };
 
 const ComputerPlayer = (marker) => {
 
-    const computeMove = () => {
+    const isHuman = false;
 
-        console.log("computing...");
+    const computeMove = () => {
 
         let simulTiles = [...gameboard.getTiles()];
         let scores = [];
@@ -60,10 +63,6 @@ const ComputerPlayer = (marker) => {
 
                 scores[i] = computerAverage + playerAverage;
 
-                console.log(simulTiles);
-                console.log(computerCounts, playerCounts);
-                console.log(computerAverage, playerAverage);
-
                 if (!highScore) {
                     highScore = scores[i];
                     winningIndex = i;
@@ -84,19 +83,9 @@ const ComputerPlayer = (marker) => {
     return {
         computeMove,
         placeMove,
+        isHuman,
     }
 };
-
-
-let player1, player2;
-
-player1 = Player('x');
-player2 = Player('o');
-
-let computerPlayer = ComputerPlayer('o');
-
-players = [player1, player2];
-
 
 const gameboard = (() => {
 
@@ -162,7 +151,7 @@ const gameboard = (() => {
                 newTile.classList.add('tile');
                 newTile.setAttribute('id', i)
                 newTile.addEventListener('click', function() {
-                    if (Gameplay.getActivePlayer() !== computerPlayer) {
+                    if (Gameplay.getActivePlayer().isHuman) {
                         Gameplay.getActivePlayer().placeMove(parseInt(newTile.id));
                     }
                 });
@@ -176,10 +165,6 @@ const gameboard = (() => {
     const activateBoard = () => {
 
         tilesMarked = 0;
-
-        if (Gameplay.getActivePlayer().marker === 'o'){
-            Gameplay.switchPlayer();
-        }
 
         gameboardElement.style.opacity = '1';
 
@@ -200,7 +185,6 @@ const gameboard = (() => {
         updateDisplay(tile, marker);
 
         if(Gameplay.checkWin(marker)) {
-            console.log('winner!')
             updateWinner(Gameplay.getActivePlayer().marker);
 
         }
@@ -228,16 +212,18 @@ const gameboard = (() => {
         winner === 'x' ? player = 'P1' : player = 'P2';
         if (winner) {
             winnerElement.innerHTML = `${player} has won!`;
-            console.log(`${player} has won!`);
         }
         else {
             winnerElement.innerHTML = "It's a tie!";
-            console.log("it's a tie!");
         }
 
         tilesMarked = 9;
         winnerElement.style.display = 'block';
         gameboardElement.style.opacity = '0.5';
+
+        if (Gameplay.getActivePlayer() === players [1]) {
+            Gameplay.switchPlayer();
+        }
     }
 
     restartElement.addEventListener('click', function() {reset()});
@@ -256,7 +242,7 @@ const gameboard = (() => {
 
 const Gameplay =(() => {
 
-    let activePlayer = players[0];
+    let activePlayer;
 
     const checkWin = (marker) => {
 
@@ -341,13 +327,17 @@ const Gameplay =(() => {
     }
 
     const switchPlayer = () => {
-        activePlayer === players[0] ? activePlayer = players[1] : activePlayer = players[0];
-        if (activePlayer === computerPlayer) {
-            computerPlayer.computeMove();
+
+        activePlayer.marker === players[0].marker ? activePlayer = players[1] : activePlayer = players[0];
+        if (!activePlayer.isHuman) {
+            activePlayer.computeMove();
         }
     }
 
     const getActivePlayer = () => {
+        if (!activePlayer) {
+            activePlayer = players[0];
+        }
         return activePlayer;
     }
 
@@ -366,12 +356,12 @@ for (const selector of playerSelectors) {
         if (!players[1]) {
 
             if (selector.innerHTML === 'Human') {
-                players[1] = player2;
+                players = [Player('x'), Player('o')]
                 playerSelectors[1].style.opacity = '0.3';
                 playerSelectors[0].classList.add('underline');
             }
             else {
-                players[1] = computerPlayer;
+                players = [Player('x'), ComputerPlayer('o')]
                 playerSelectors[0].style.opacity = '1';
                 playerSelectors[1].classList.add('underline');
             }

@@ -13,6 +13,10 @@ body {
     text-align: center;
 }
 
+.players > * {
+    margin: 8px;
+}
+
 .playerType {
     padding: 15px;
 }
@@ -53,4 +57,53 @@ body {
     transform: translate(-50%, -50%);
     z-index: 10;
     display: none;
+}
+
+.ellipsis {
+    font-size: 30px;
+    line-height: 0.5;
+}
+
+.blinking {
+    animation-name: blinking;
+    animation-duration: 0.6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: steps(1);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: black;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 4px;
+}
+
+.delay1 {
+    animation-delay: 0.12s;
+}
+
+.delay2 {
+    animation-delay: 0.24s;
+}
+
+@keyframes blinking {
+    0% {
+        width: 8px;
+        height: 8px;
+        margin: 4px;
+    }
+
+    20% {
+        width: 12px;
+        height: 12px;
+        margin: 2px;
+    }
+
+    40% {
+        width: 8px;
+        height: 8px;
+        margin: 4px;
+    }
 }

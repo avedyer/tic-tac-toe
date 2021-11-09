@@ -92,6 +92,7 @@ const gameboard = (() => {
     const gameboardElement = document.querySelector('.gameboard');
     const winnerElement = document.querySelector('.winner');
     const restartElement = document.querySelector('.restart');
+    const ellipsisElements = document.querySelectorAll('.dot');
 
     let tiles = new Array(9);
     let tilesMarked = 0;
@@ -132,6 +133,10 @@ const gameboard = (() => {
             selector.style.opacity = '1';
             selector.classList.remove('underline');
             selector.classList.add('hoverEffect');
+        }
+
+        for (const dot of ellipsisElements) {
+            dot.classList.remove('blinking');
         }
 
         if (tileElements.length === 9) {
@@ -175,6 +180,10 @@ const gameboard = (() => {
 
     const updateTile = (tile, marker) => {
 
+        for (const dot of ellipsisElements) {
+            dot.classList.remove('blinking');
+        }
+
         if (tiles[tile] || tilesMarked === 9 || !players[1]) {
             return false
         }
@@ -187,10 +196,17 @@ const gameboard = (() => {
         if(Gameplay.checkWin(marker)) {
             updateWinner(Gameplay.getActivePlayer().marker);
 
+            for (const dot of ellipsisElements) {
+                dot.classList.remove('blinking');
+            }
         }
 
         else if (tilesMarked === 9){
             updateWinner(null);
+
+            for (const dot of ellipsisElements) {
+                dot.classList.remove('blinking');
+            }
         }
 
         else {
@@ -203,6 +219,14 @@ const gameboard = (() => {
     const updateDisplay = (tile, marker) => {
         let updatedTile = document.getElementById(tile);
         updatedTile.innerHTML = marker;
+
+        let ellipsisStart;
+
+        Gameplay.getActivePlayer() === players[0] ? ellipsisStart = 3 : ellipsisStart = 0;
+
+        for (let i=0; i<3; ++i) {
+            ellipsisElements[ellipsisStart + i].classList.add('blinking');
+        }
     }
 
     const updateWinner = (winner) => {

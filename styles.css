@@ -2,10 +2,13 @@ body {
     text-align: center;
     position: relative;
     background-color: azure;
+    padding: 30px;
+    font-family: 'Architects Daughter';
+    overflow: hidden;
 }
 
-.players {
-    width: 60vw;
+.playerInfo {
+    width: 40vw;
     margin-left: auto;
     margin-right: auto;
     display: grid;
@@ -14,12 +17,17 @@ body {
     text-align: center;
 }
 
-.players > * {
-    margin: 8px;
+.playerInfo > * {
+    margin: 0px;
+}
+
+.player {
+    font-size: 36px;
 }
 
 .playerType {
     padding: 15px;
+    font-size: 24px;
 }
 
 .hoverEffect:hover {
@@ -33,12 +41,11 @@ body {
 .gameboard {
     width: 600px;
     height: 600px;
-    margin: auto;
     display: grid;
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(3, 1fr);
     overflow: hidden;
-    
+    margin: 24px auto 24px auto;    
 }
 
 .tile { 
@@ -63,10 +70,22 @@ body {
     transform: translate(-50%, -50%);
     z-index: 10;
     display: none;
+    background-color: #252525;
+    color: white;
+    font-size: 80px;
+    padding: 12px;
+}
+
+.restart {
+    font-size: 32px;
+}
+
+.restart:hover {
+    text-decoration: underline;
 }
 
 .ellipsis {
-    font-size: 30px;
+    font-size: 36px;
     line-height: 0.5;
 }
 
@@ -116,4 +135,26 @@ body {
         height: 8px;
         margin: 4px;
     }
+}
+
+footer {
+    font-size: 24px;
+    margin: auto;
+    font-style: italic;
+}
+
+footer img {
+    width: 0.8em;
+    height: 0.8em;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+a:hover {
+    text-decoration: underline;
+    opacity: 1;
 }

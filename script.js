@@ -75,7 +75,7 @@ const ComputerPlayer = (marker) => {
             }
         }
 
-        setTimeout(() => {placeMove(winningIndex);}, 2000);
+        placeMove(winningIndex);
     }
 
     const {placeMove} = Player(marker);
@@ -173,8 +173,16 @@ const gameboard = (() => {
 
         gameboardElement.style.opacity = '1';
 
+        if (Gameplay.getActivePlayer().marker != 'x') {
+            Gameplay.switchPlayer();
+        }
+
         for (const selector of playerSelectors) {
             selector.classList.remove('hoverEffect');
+        }
+
+        for (let i=0; i<3; ++i) {
+            ellipsisElements[i].classList.add('blinking');
         }
     }
 
@@ -244,10 +252,6 @@ const gameboard = (() => {
         tilesMarked = 9;
         winnerElement.style.display = 'block';
         gameboardElement.style.opacity = '0.5';
-
-        if (Gameplay.getActivePlayer() === players [1]) {
-            Gameplay.switchPlayer();
-        }
     }
 
     restartElement.addEventListener('click', function() {reset()});
@@ -274,6 +278,7 @@ const Gameplay =(() => {
 
         for (let count of counts ) {
             if (count === 3) {
+                activePlayer = players[0];
                 return true
             }
         }
@@ -354,7 +359,7 @@ const Gameplay =(() => {
 
         activePlayer.marker === players[0].marker ? activePlayer = players[1] : activePlayer = players[0];
         if (!activePlayer.isHuman) {
-            activePlayer.computeMove();
+            setTimeout(() => {activePlayer.computeMove();}, 2000);
         }
     }
 

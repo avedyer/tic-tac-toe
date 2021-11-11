@@ -123,20 +123,24 @@ const gameboard = (() => {
     }
     
     const reset = () => {
-        gameboardElement.style.opacity = '0.5';
+        gameboardElement.classList.add('transparent');
 
         let tileElements = document.querySelectorAll('.tile');
 
         winnerElement.style.display = 'none';
 
         for (const selector of playerSelectors) {
-            selector.style.opacity = '1';
+            selector.classList.remove('transparent')
             selector.classList.remove('underline');
             selector.classList.add('hoverEffect');
         }
 
         for (const dot of ellipsisElements) {
             dot.classList.remove('blinking');
+        }
+
+        for (let i=3; i<6; ++i) {
+            ellipsisElements[i].classList.add('blinking');
         }
 
         if (tileElements.length === 9) {
@@ -171,9 +175,9 @@ const gameboard = (() => {
 
         tilesMarked = 0;
 
-        gameboardElement.style.opacity = '1';
+        gameboardElement.classList.remove('transparent');
 
-        if (Gameplay.getActivePlayer().marker != 'x') {
+        if (Gameplay.getActivePlayer().marker != 'X') {
             Gameplay.switchPlayer();
         }
 
@@ -181,6 +185,9 @@ const gameboard = (() => {
             selector.classList.remove('hoverEffect');
         }
 
+        for (const dot of ellipsisElements) {
+            dot.classList.remove('blinking');
+        }
         for (let i=0; i<3; ++i) {
             ellipsisElements[i].classList.add('blinking');
         }
@@ -241,7 +248,7 @@ const gameboard = (() => {
 
         let player;
 
-        winner === 'x' ? player = 'P1' : player = 'P2';
+        winner === 'X' ? player = 'P1' : player = 'P2';
         if (winner) {
             winnerElement.innerHTML = `${player} has won!`;
         }
@@ -251,7 +258,29 @@ const gameboard = (() => {
 
         tilesMarked = 9;
         winnerElement.style.display = 'block';
-        gameboardElement.style.opacity = '0.5';
+        gameboardElement.classList.add('transparent');
+    }
+
+    const playerSelectors = document.querySelectorAll('.playerType');
+
+    for (const selector of playerSelectors) {
+        selector.onclick = () => {
+            if (!players[1]) {
+
+                if (selector.innerHTML === 'Human') {
+                    players = [Player('X'), Player('O')]
+                    playerSelectors[1].classList.add('transparent')
+                    playerSelectors[0].classList.add('underline');
+                }
+                else {
+                    players = [Player('X'), ComputerPlayer('O')]
+                    playerSelectors[0].classList.add('transparent')
+                    playerSelectors[1].classList.add('underline');
+                }
+
+                activateBoard();
+            }
+        }
     }
 
     restartElement.addEventListener('click', function() {reset()});
@@ -290,7 +319,7 @@ const Gameplay =(() => {
 
         let opponentMarker;
 
-        marker === 'x' ? opponentMarker = 'o' : opponentMarker = 'x';
+        marker === 'X' ? opponentMarker = 'O' : opponentMarker = 'X';
 
         let tilesGrid = [...gameboard.getTilesGrid(tilesInput)];
 
@@ -377,27 +406,5 @@ const Gameplay =(() => {
         getCounts,
     }
 })();
-
-const playerSelectors = document.querySelectorAll('.playerType');
-
-for (const selector of playerSelectors) {
-    selector.onclick = () => {
-        if (!players[1]) {
-
-            if (selector.innerHTML === 'Human') {
-                players = [Player('x'), Player('o')]
-                playerSelectors[1].style.opacity = '0.3';
-                playerSelectors[0].classList.add('underline');
-            }
-            else {
-                players = [Player('x'), ComputerPlayer('o')]
-                playerSelectors[0].style.opacity = '1';
-                playerSelectors[1].classList.add('underline');
-            }
-
-            gameboard.activateBoard();
-        }
-    }
-}
 
 window.addEventListener('DOMContentLoaded', () => {gameboard.reset();});
